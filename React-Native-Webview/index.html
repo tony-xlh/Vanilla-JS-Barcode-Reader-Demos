@@ -25,6 +25,8 @@
     <script>
       let enhancer;
       let reader;
+      let interval;
+      let processing = false;
       init();
       async function init(){
         Dynamsoft.DBR.BarcodeScanner.license = 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=='; // one-day trial
@@ -32,12 +34,59 @@
         enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
         enhancer.on("played", (playCallbackInfo) => {
           console.log("camera started");
+          startProcessingLoop();
         });
         await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
         let container = document.getElementsByClassName("scanner")[0];
         container.appendChild(enhancer.getUIElement());
+        startScan();
+      }
+
+      function startProcessingLoop(isBarcode){
+        stopProcessingLoop();
+        interval = setInterval(captureAndDecode,100); // read barcodes
+      }
+
+      function stopProcessingLoop(){
+        if (interval) {
+          clearInterval(interval);
+          interval = undefined;
+        }
+        processing = false;
+      }
+
+      async function captureAndDecode() {
+        if (!enhancer || !reader) {
+          return
+        }
+        if (enhancer.isOpen() === false) {
+          return;
+        }
+        if (processing == true) {
+          return;
+        }
+        processing = true; // set processing to true so that the next frame will be skipped if the processing has not completed.
+        let frame = enhancer.getFrame();
+        if (frame) {  
+          let results = await reader.decode(frame);
+          console.log(results);
+          processing = false;
+        }
+      };
+
+      function startScan(){
+        if (!enhancer || !reader) {
+          alert("Please wait for the initialization of Dynamsoft Barcode Reader");
+          return;
+        }
         document.getElementsByClassName("scanner")[0].classList.add("active");
         enhancer.open(true); //start the camera
+      }
+        
+      function stopScan(){
+        stopProcessingLoop();
+        enhancer.close(true);
+        document.getElementsByClassName("scanner")[0].classList.remove("active");
       }
     </script>
   </body>
