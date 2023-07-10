@@ -1,0 +1,1 @@
+# Vanilla-JS-Barcode-Reader-Demos
