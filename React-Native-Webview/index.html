@@ -21,7 +21,12 @@
     </style>
   </head>
   <body>
-    <div class="scanner"></div>
+    <div class="app">
+      <button onclick="startScan();">Scan From Camera</button>
+      <button onclick="readFromImage();">Read From Image</button>
+    </div>
+    <div class="scanner">
+    </div>
     <script>
       let enhancer;
       let reader;
@@ -36,10 +41,12 @@
           console.log("camera started");
           startProcessingLoop();
         });
+        enhancer.on("cameraClose", playCallBackInfo => {
+          stopProcessingLoop();
+        });
         await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
         let container = document.getElementsByClassName("scanner")[0];
         container.appendChild(enhancer.getUIElement());
-        startScan();
       }
 
       function startProcessingLoop(isBarcode){
@@ -87,6 +94,10 @@
         stopProcessingLoop();
         enhancer.close(true);
         document.getElementsByClassName("scanner")[0].classList.remove("active");
+      }
+
+      function readFromImage(){
+
       }
     </script>
   </body>
