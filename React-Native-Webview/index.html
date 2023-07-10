@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.4/dist/dce.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.20/dist/dbr.js"></script>
     <title>QR Code Scanner in React-Native-WebView</title>
     <style>
       .scanner {
@@ -23,8 +24,11 @@
     <div class="scanner"></div>
     <script>
       let enhancer;
+      let reader;
       init();
       async function init(){
+        Dynamsoft.DBR.BarcodeScanner.license = 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=='; // one-day trial
+        reader = await Dynamsoft.DBR.BarcodeScanner.createInstance();
         enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
         enhancer.on("played", (playCallbackInfo) => {
           console.log("camera started");
