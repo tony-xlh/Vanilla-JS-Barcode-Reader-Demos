@@ -78,7 +78,13 @@
         await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
         let container = document.getElementsByClassName("scanner")[0];
         container.appendChild(enhancer.getUIElement());
+        updateStyleForiOS();
         updateStatus("");
+      }
+
+      function updateStyleForiOS(){
+        document.getElementsByClassName("dce-sel-camera")[0].parentElement.style = "position: absolute;left: 0;top: 0;top: env(safe-area-inset-top);";
+        document.getElementsByClassName("dce-btn-close")[0].style = "position: absolute;right: 0;top: 0;top: env(safe-area-inset-top);";
       }
 
       function startProcessingLoop(isBarcode){
