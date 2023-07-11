@@ -100,9 +100,9 @@
           if (results.length > 0) {
             updateStatus("Found "+results.length+((results.length>1)?" results":" result"));
             stopScan();
-          }
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify(results));
+            if (window.ReactNativeWebView) {
+              window.ReactNativeWebView.postMessage(JSON.stringify(results));
+            }
           }
           processing = false;
         }
