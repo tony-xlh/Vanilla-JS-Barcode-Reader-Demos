@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="viewport"
+      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.4/dist/dce.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.20/dist/dbr.js"></script>
     <title>QR Code Scanner in React-Native-WebView</title>
@@ -32,6 +35,14 @@
         left: 50%;
         width: 100%;
         transform: translate(-50%);
+      }
+      .app {
+        position: fixed;
+        top: 0;
+        top: env(safe-area-inset-top);
+        left: 0;
+        width: 100%;
+        height: 100%;
       }
     </style>
   </head>
