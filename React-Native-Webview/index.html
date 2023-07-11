@@ -83,6 +83,9 @@
         container.appendChild(enhancer.getUIElement());
         updateStyleForiOS();
         updateStatus("");
+        if (getUrlParam("startScan") === "true") {
+          startScan();
+        }
       }
 
       function updateStyleForiOS(){
@@ -167,6 +170,12 @@
           const track = tracks[i];
           track.stop();  // stop the opened camera
         }
+      }
+
+      function getUrlParam(name) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return unescape(r[2]); return null;
       }
     </script>
   </body>
