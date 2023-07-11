@@ -67,6 +67,7 @@
       init();
       async function init(){
         updateStatus("Initializing...");
+        await requestCameraPermission();
         Dynamsoft.DBR.BarcodeScanner.license = 'DLS2eyJoYW5kc2hha2VDb2RlIjoiMjAwMDAxLTE2NDk4Mjk3OTI2MzUiLCJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSIsInNlc3Npb25QYXNzd29yZCI6IndTcGR6Vm05WDJrcEQ5YUoifQ=='; // one-day trial
         reader = await Dynamsoft.DBR.BarcodeScanner.createInstance();
         enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
@@ -156,6 +157,16 @@
 
       function updateStatus(info){
         document.getElementsByClassName("status")[0].innerText = info;
+      }
+
+      async function requestCameraPermission() {
+        const constraints = {video: true, audio: false};
+        const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        const tracks = stream.getTracks();
+        for (let i=0;i<tracks.length;i++) {
+          const track = tracks[i];
+          track.stop();  // stop the opened camera
+        }
       }
     </script>
   </body>
