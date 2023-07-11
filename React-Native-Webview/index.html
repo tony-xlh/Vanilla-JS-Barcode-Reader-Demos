@@ -84,6 +84,7 @@
         updateStyleForiOS();
         updateStatus("");
         if (getUrlParam("startScan") === "true") {
+          hideControls();
           startScan();
         }
       }
@@ -91,6 +92,10 @@
       function updateStyleForiOS(){
         document.getElementsByClassName("dce-sel-camera")[0].parentElement.style = "position: absolute;left: 0;top: 0;top: env(safe-area-inset-top);";
         document.getElementsByClassName("dce-btn-close")[0].style = "position: absolute;right: 0;top: 0;top: env(safe-area-inset-top);";
+      }
+
+      function hideControls(){
+        document.getElementsByClassName("controls")[0].style.display = "none";
       }
 
       function startProcessingLoop(isBarcode){
