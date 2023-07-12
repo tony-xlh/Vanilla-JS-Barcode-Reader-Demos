@@ -86,6 +86,9 @@
         });
         enhancer.on("cameraClose", playCallBackInfo => {
           stopScan();
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage("");
+          }
         });
         await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
         let container = document.getElementsByClassName("scanner")[0];
