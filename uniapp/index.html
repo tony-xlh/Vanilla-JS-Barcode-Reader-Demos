@@ -96,7 +96,11 @@
         enhancer.on("cameraClose", playCallBackInfo => {
           stopScan();
           if (window.uni) {
-            window.uni.postMessage("");
+            window.uni.postMessage({
+              data: {
+                action: 'closed'
+              }
+            });
           }
         });
         await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
@@ -151,7 +155,12 @@
             if (window.uni) {
               console.log("postmessage");
               console.log(results);
-              window.uni.postMessage(JSON.stringify(results));
+              window.uni.postMessage({
+                data: {
+                  action: 'scanned',
+                  results: JSON.stringify(results)
+                }
+              });
             }
           }
           processing = false;
@@ -180,7 +189,12 @@
           let results = await reader.decode(file);
           updateStatus("Found "+results.length+((results.length>1)?" results":" result"));
           if (window.uni) {
-            window.uni.postMessage(JSON.stringify(results));
+            window.uni.postMessage({
+              data: {
+                action: 'scanned',
+                results: JSON.stringify(results)
+              }
+            });
           }
         }
       }
