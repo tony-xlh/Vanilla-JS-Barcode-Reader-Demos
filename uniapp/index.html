@@ -182,6 +182,7 @@
           return;
         }
         document.getElementsByClassName("scanner")[0].classList.add("active");
+        updateRuntimeSettings(false);
         enhancer.open(true); //start the camera
       }
         
@@ -209,10 +210,21 @@
         let fileInput = document.getElementById("file");
         if (fileInput.files.length > 0) {
           let file = fileInput.files[0];
+          await updateRuntimeSettings(true);
           let results = await reader.decode(file);
           updateStatus("Found "+results.length+((results.length>1)?" results":" result"));
           sendBarcodeResults(results);
         }
+      }
+      
+      async function updateRuntimeSettings(staticImage){
+        let settings = await reader.getRuntimeSettings();
+        if (staticImage) {
+          settings.expectedBarcodesCount = 512
+        }else{
+          settings.expectedBarcodesCount = 1;
+        }
+        await reader.updateRuntimeSettings(settings);
       }
 
       function updateStatus(info){
