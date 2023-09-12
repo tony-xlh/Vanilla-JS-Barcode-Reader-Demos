@@ -6,8 +6,6 @@
       name="viewport"
       content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    
-    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.4/dist/dce.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.20/dist/dbr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
@@ -51,7 +49,10 @@
     </style>
   </head>
   <body>
-    <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script>
+    <!-- <script type="text/javascript" src="https://unpkg.com/@dcloudio/uni-webview-js@0.0.3/index.js"></script> -->  
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.4.0.js"></script>
+    <script type="text/javascript" src="https://js.cdn.aliyun.dcloud.net.cn/dev/uni-app/uni.webview.1.5.2.js"></script>
+
     <script>
       document.addEventListener('UniAppJSBridgeReady', function() {
         uni.webView.getEnv(function(res) {
@@ -206,7 +207,7 @@
         }
         if (wx) {
           wx.miniProgram.postMessage(message);
-          wx.miniProgram.navigateBack(message);
+          wx.miniProgram.navigateBack();
           wx.miniProgram.postMessage(message);
         }
       }
