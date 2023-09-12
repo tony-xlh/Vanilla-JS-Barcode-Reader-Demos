@@ -170,11 +170,7 @@
           if (results.length > 0) {
             updateStatus("Found "+results.length+((results.length>1)?" results":" result"));
             stopScan();
-            if (window.uni) {
-              console.log("postmessage");
-              console.log(results);
-              sendBarcodeResults(results);
-            }
+            sendBarcodeResults(results);
           }
           processing = false;
         }
@@ -202,13 +198,10 @@
             results: JSON.stringify(results)
           }
         }
+        console.log("postmessage");
+        console.log(message);
         if (window.uni) {
           window.uni.postMessage(message);
-        }
-        if (wx) {
-          wx.miniProgram.postMessage(message);
-          wx.miniProgram.navigateBack();
-          wx.miniProgram.postMessage(message);
         }
       }
 
