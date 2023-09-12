@@ -6,6 +6,8 @@
       name="viewport"
       content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
+    
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-camera-enhancer@3.3.4/dist/dce.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.20/dist/dbr.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
@@ -170,12 +172,7 @@
             if (window.uni) {
               console.log("postmessage");
               console.log(results);
-              window.uni.postMessage({
-                data: {
-                  action: 'scanned',
-                  results: JSON.stringify(results)
-                }
-              });
+              sendBarcodeResults(results);
             }
           }
           processing = false;
@@ -196,6 +193,24 @@
         enhancer.close(true);
         document.getElementsByClassName("scanner")[0].classList.remove("active");
       }
+      
+      function sendBarcodeResults(results){
+        const message = {
+          data: {
+            action: 'scanned',
+            results: JSON.stringify(results)
+          }
+        }
+        if (window.uni) {
+          window.uni.postMessage(message);
+        }
+        if (wx) {
+          wx.miniProgram.navigateBack({
+              delta: 1
+          });
+          wx.miniProgram.postMessage(message);
+        }
+      }
 
       async function readFromImage(){
         let fileInput = document.getElementById("file");
@@ -203,14 +218,7 @@
           let file = fileInput.files[0];
           let results = await reader.decode(file);
           updateStatus("Found "+results.length+((results.length>1)?" results":" result"));
-          if (window.uni) {
-            window.uni.postMessage({
-              data: {
-                action: 'scanned',
-                results: JSON.stringify(results)
-              }
-            });
-          }
+          sendBarcodeResults(results);
         }
       }
 
