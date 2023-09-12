@@ -79,7 +79,13 @@
         if (getUrlParam("startScan") === "true") {
           hideControls();
         }
-        await requestCameraPermission();
+        
+        try {
+          await requestCameraPermission();
+        }catch (e) {
+          console.log(e);
+        }
+        
         
         if (getUrlParam("license")) {
           Dynamsoft.DBR.BarcodeScanner.license = getUrlParam("license");
