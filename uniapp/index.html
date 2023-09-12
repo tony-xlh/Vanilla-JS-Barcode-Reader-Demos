@@ -89,8 +89,8 @@
         });
         enhancer.on("cameraClose", playCallBackInfo => {
           stopScan();
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage("");
+          if (window.uni) {
+            window.uni.postMessage("");
           }
         });
         await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
@@ -143,6 +143,8 @@
             updateStatus("Found "+results.length+((results.length>1)?" results":" result"));
             stopScan();
             if (window.uni) {
+              console.log("postmessage");
+              console.log(results);
               window.uni.postMessage(JSON.stringify(results));
             }
           }
