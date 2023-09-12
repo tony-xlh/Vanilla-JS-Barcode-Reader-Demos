@@ -86,7 +86,6 @@
       async function init(){
         updateStatus("Initializing...");
         
-        
         try {
           await requestCameraPermission();
         }catch (e) {
@@ -208,6 +207,9 @@
         console.log(message);
         if (window.uni) {
           window.uni.postMessage(message);
+        }
+        if (window.wx) {
+          alert("You are in the Weixin environment. Please copy the program's link or share it to turn back.")
         }
       }
 
