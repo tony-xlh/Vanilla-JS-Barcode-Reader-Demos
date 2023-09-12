@@ -205,9 +205,8 @@
           window.uni.postMessage(message);
         }
         if (wx) {
-          wx.miniProgram.navigateBack({
-              delta: 1
-          });
+          wx.miniProgram.postMessage(message);
+          wx.miniProgram.navigateBack(message);
           wx.miniProgram.postMessage(message);
         }
       }
