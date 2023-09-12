@@ -100,29 +100,32 @@
         }
         
         reader = await Dynamsoft.DBR.BarcodeScanner.createInstance();
-        enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
-        enhancer.on("played", (playCallbackInfo) => {
-          console.log("camera started");
-          startProcessingLoop();
-        });
-        enhancer.on("cameraClose", playCallBackInfo => {
-          stopScan();
-          if (window.uni) {
-            window.uni.postMessage({
-              data: {
-                action: 'closed'
-              }
-            });
+        
+        if (hasCamera) {
+          enhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance();
+          enhancer.on("played", (playCallbackInfo) => {
+            console.log("camera started");
+            startProcessingLoop();
+          });
+          enhancer.on("cameraClose", playCallBackInfo => {
+            stopScan();
+            if (window.uni) {
+              window.uni.postMessage({
+                data: {
+                  action: 'closed'
+                }
+              });
+            }
+          });
+          await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
+          let container = document.getElementsByClassName("scanner")[0];
+          container.appendChild(enhancer.getUIElement());
+          if (getUrlParam("startScan") === "true") {
+            startScan();
           }
-        });
-        await enhancer.setUIElement(Dynamsoft.DCE.CameraEnhancer.defaultUIElementURL);
-        let container = document.getElementsByClassName("scanner")[0];
-        container.appendChild(enhancer.getUIElement());
+        }
         updateStyleForiOS();
         updateStatus("");
-        if (getUrlParam("startScan") === "true") {
-          startScan();
-        }
       }
 
       function updateStyleForiOS(){
