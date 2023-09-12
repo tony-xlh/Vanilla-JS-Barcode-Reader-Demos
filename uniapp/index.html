@@ -60,9 +60,9 @@
    </script>
     <div class="app">
       <div class="controls">
-        <button onclick="startScan();">Scan From Camera</button>
+        <button class="scanButton" onclick="startScan();">Scan From Camera</button>
         <input type="file" onchange="readFromImage();" name="file" accept=".jpg,.jpeg,.png,.bmp" id="file" style="display:none">
-        <button onclick="document.getElementById('file').click()" >Read From Image</button>
+        <button class="fileButton" onclick="document.getElementById('file').click()" >Read From Image</button>
       </div>
       <div class="status"></div>
     </div>
@@ -73,17 +73,23 @@
       let reader;
       let interval;
       let processing = false;
+      let hasCamera = true;
       init();
       async function init(){
         updateStatus("Initializing...");
-        if (getUrlParam("startScan") === "true") {
-          hideControls();
-        }
+        
         
         try {
           await requestCameraPermission();
         }catch (e) {
           console.log(e);
+          hasCamera = false;
+          document.getElementsByClassName("scanButton")[0].style.display = "none";
+          alert("No camera detected. Please read barcodes from an image");
+        }
+        
+        if (hasCamera && getUrlParam("startScan") === "true") {
+          hideControls();
         }
         
         
