@@ -198,6 +198,7 @@
         stopProcessingLoop();
         enhancer.close(true);
         document.getElementsByClassName("scanner")[0].classList.remove("active");
+        revealControls();
       }
       
       function sendBarcodeResults(results){
