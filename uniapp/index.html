@@ -84,6 +84,7 @@
       let hasCamera = true;
       init();
       async function init(){
+        hideControls();
         updateStatus("Initializing...");
         
         try {
@@ -95,10 +96,9 @@
           alert("No camera detected. Please read barcodes from an image");
         }
         
-        if (hasCamera && getUrlParam("startScan") === "true") {
-          hideControls();
+        if (getUrlParam("startScan") !== "true") {
+          revealControls();
         }
-        
         
         if (getUrlParam("license")) {
           Dynamsoft.DBR.BarcodeScanner.license = getUrlParam("license");
@@ -142,6 +142,10 @@
 
       function hideControls(){
         document.getElementsByClassName("controls")[0].style.display = "none";
+      }
+      
+      function revealControls(){
+        document.getElementsByClassName("controls")[0].style.display = "";
       }
 
       function startProcessingLoop(isBarcode){
