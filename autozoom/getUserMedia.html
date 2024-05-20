@@ -147,9 +147,9 @@
     }
 
     function displayResults(result){
-      if (result.barcodeResultItems && result.barcodeResultItems.length > 0) {   
-        let ol = document.querySelector(".results ol");
-        ol.innerHTML = "";
+      let ol = document.querySelector(".results ol");
+      ol.innerHTML = "";
+      if (result.barcodeResultItems && result.barcodeResultItems.length > 0) {     
         for (let index = 0; index < result.barcodeResultItems.length; index++) {
           const item = result.barcodeResultItems[index];
           const li = document.createElement("li");
