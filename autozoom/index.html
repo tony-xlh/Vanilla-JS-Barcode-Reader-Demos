@@ -39,7 +39,7 @@
   </label>
   <label>
     Zoom Factor:
-    <input type="number" min="0" max="2" id="zoomInput" value="0" onchange="setZoom();">
+    <span id="zoomFactor">1</span>
   </label>
   <button onclick="startCamera();">Start Camera</button>
   <br/>
@@ -73,7 +73,7 @@
       router.setInput(cameraEnhancer);
 
       router.addResultReceiver({ onDecodedBarcodesReceived: (result) => {
-        console.log(result);
+        document.getElementById("zoomFactor").innerText = cameraEnhancer.getZoomSettings().factor;
         displayResults(result);
       }});
 
@@ -113,23 +113,7 @@
       await cameraEnhancer.selectCamera(selectedCamera);
       await cameraEnhancer.setResolution({width:width, height:height});
       await cameraEnhancer.open();
-      loadZoomRange();
       await router.startCapturing("ReadSingleBarcode");
-    }
-
-    function loadZoomRange(){
-      let zoomRange = cameraEnhancer.getAutoZoomRange();
-      console.log(zoomRange);
-      let min = zoomRange["min"];
-      let max = zoomRange["max"];
-      document.getElementById("zoomInput").setAttribute("min",min);
-      document.getElementById("zoomInput").setAttribute("max",max);
-      document.getElementById("zoomInput").value  = 0;
-    }
-
-    async function setZoom(){
-      let expectedZoom = document.getElementById("zoomInput").value;
-      cameraEnhancer.setZoom({factor: parseFloat(expectedZoom)});
     }
   </script>
 </body>
