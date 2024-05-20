@@ -84,7 +84,7 @@
     }
 
     function displayResults(result){
-      if (result.barcodeResultItems.length > 0) {
+      if (result.barcodeResultItems.length > 0) {   
         let ol = document.querySelector(".results ol");
         ol.innerHTML = "";
         for (let index = 0; index < result.barcodeResultItems.length; index++) {
