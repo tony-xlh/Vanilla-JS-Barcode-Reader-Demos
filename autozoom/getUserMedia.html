@@ -16,6 +16,8 @@
       border: 1px black solid;
       margin: 10px 0;
       padding: 5px;
+      height: 75px;
+      overflow: auto;
     }
 
     .scanner {
@@ -76,6 +78,8 @@
     let processing = false;
     let intermediateResultManager;
     let overlay = document.getElementById("overlay");
+    let currentResult;
+    let zoomedDate;
     window.onload = async function(){
       await requestCameraPermission();
       await listCameras();
@@ -97,10 +101,55 @@
       intermediateResultManager = router.getIntermediateResultManager();
       const intermediateResultReceiver = new Dynamsoft.CVR.IntermediateResultReceiver();
       intermediateResultReceiver.onLocalizedBarcodesReceived = (result, info) => {
-        console.log(result);
+        //console.log(result);
+        if (currentResult && currentResult.items && currentResult.items.length == 0) {     
+          if (result.localizedBarcodes.length > 0) {
+            let zoomInput = document.getElementById("zoomInput");
+            if (parseFloat(zoomInput.value) <= 1.0) {
+              console.log("not zoomed. try to zoom");
+              zoomIn(result.localizedBarcodes[0]);
+            }else{
+              console.log("zoomed. zoom out if time out");
+              zoomOutIfTimeOut();
+            }
+          }
+        }
         drawOverlay(result.localizedBarcodes);
       };
       intermediateResultManager.addResultReceiver(intermediateResultReceiver);
+    }
+
+    function zoomIn(localizedBarcode){
+      if (localizedBarcode.confidence > 75) {
+        document.getElementById("zoomInput").value = calculatedFactor(localizedBarcode);
+        setZoom();
+      }
+    }
+
+    function zoomOutIfTimeOut(){
+      let currentDate = new Date();
+      let elapsed = currentDate.getTime() - zoomedDate.getTime();
+      console.log("elapsed: "+elapsed)
+      if (elapsed > 5 * 1000) {
+        console.log("timed out");
+        document.getElementById("zoomInput").value = 1;
+        setZoom();
+      }
+    }
+
+    function calculatedFactor(localizedBarcode){
+      let left = localizedBarcode.location.points[0].x;
+      let video = document.getElementById("video");
+      let width = video.videoWidth;
+      if (left < width/2) {
+        let croppedWidth = Math.max(0,left - 50);
+        if (croppedWidth == 0) {
+          return 1.0;
+        }
+        return width / (croppedWidth * 2);
+      }else{
+        return 1.0;
+      }
     }
 
     function startProcessing(){
@@ -117,8 +166,8 @@
         return;
       }
       processing = true;
-      let result = await router.capture(document.getElementsByTagName("video")[0],"ReadSingleBarcode");
-      displayResults(result);
+      currentResult = await router.capture(document.getElementsByTagName("video")[0],"ReadSingleBarcode");
+      displayResults(currentResult);
       processing = false;
     }
 
@@ -127,7 +176,7 @@
       let group = document.createElementNS("http://www.w3.org/2000/svg","g");
       for (let index = 0; index < localizedBarcodes.length; index++) {
         const localizedBarcode = localizedBarcodes[index];
-        if (localizedBarcode.confidence>50) {
+        if (localizedBarcode.confidence>75) {
           let points = localizedBarcode.location.points;
           let polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
           polygon.setAttribute("points",getPointsData(points));
@@ -149,7 +198,7 @@
     function displayResults(result){
       let ol = document.querySelector(".results ol");
       ol.innerHTML = "";
-      if (result.barcodeResultItems && result.barcodeResultItems.length > 0) {     
+      if (result && result.barcodeResultItems && result.barcodeResultItems.length > 0) {     
         for (let index = 0; index < result.barcodeResultItems.length; index++) {
           const item = result.barcodeResultItems[index];
           const li = document.createElement("li");
@@ -185,9 +234,15 @@
     }
     
     async function setZoom(){
-      let expectedZoom = document.getElementById("zoomInput").value;
-      const constraints = {advanced: [{zoom: expectedZoom}]};
-      await track.applyConstraints(constraints);
+      try {
+        zoomedDate = new Date();
+        let expectedZoom = document.getElementById("zoomInput").value;
+        console.log("set zoom to "+expectedZoom);
+        const constraints = {advanced: [{zoom: expectedZoom}]};
+        await track.applyConstraints(constraints);  
+      } catch (error) {
+        console.log(error);
+      }
     }
 
     async function listCameras(){
@@ -230,7 +285,7 @@
       let height = parseInt(selectedResolution.split("x")[1]);
       
       const videoConstraints = {
-        video: {deviceId: selectedCamera.deviceId, zoom: true}, 
+        video: {width:width, height:height, deviceId: selectedCamera.deviceId, zoom: true}, 
         audio: false
       };
       try {

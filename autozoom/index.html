@@ -19,6 +19,8 @@
       border: 1px black solid;
       margin: 10px 0;
       padding: 5px;
+      height: 75px;
+      overflow: auto;
     }
   </style>
 </head>
@@ -53,6 +55,7 @@
     let track;
     let router;
     let cameraEnhancer;
+    let interval;
     window.onload = async function(){
       Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
       await initDCE();
@@ -65,6 +68,9 @@
       cameraEnhancer = await Dynamsoft.DCE.CameraEnhancer.createInstance(cameraView);
       await cameraEnhancer.enableEnhancedFeatures(Dynamsoft.DCE.EnumEnhancedFeatures.EF_AUTO_ZOOM);
       document.querySelector("#enhancerUIContainer").append(cameraView.getUIElement());
+      cameraEnhancer.on("played", () => {
+        startCheckingZoomFactor();
+      });
     }
 
     async function initCVR(){
@@ -73,7 +79,6 @@
       router.setInput(cameraEnhancer);
 
       router.addResultReceiver({ onDecodedBarcodesReceived: (result) => {
-        document.getElementById("zoomFactor").innerText = cameraEnhancer.getZoomSettings().factor;
         displayResults(result);
       }});
 
@@ -114,6 +119,18 @@
       await cameraEnhancer.setResolution({width:width, height:height});
       await cameraEnhancer.open();
       await router.startCapturing("ReadSingleBarcode");
+    }
+
+    function startCheckingZoomFactor(){
+      stopCheckingZoomFactor();
+      const checkZoomFactor = () => {
+        document.getElementById("zoomFactor").innerText = cameraEnhancer.getZoomSettings().factor;
+      }
+      interval = setInterval(checkZoomFactor,200);
+    }
+
+    function stopCheckingZoomFactor(){
+      clearInterval(interval);
     }
   </script>
 </body>
