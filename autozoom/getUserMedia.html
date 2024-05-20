@@ -51,6 +51,7 @@
     let router;
     let interval;
     let processing = false;
+    let intermediateResultManager;
     window.onload = async function(){
       await requestCameraPermission();
       await listCameras();
@@ -65,6 +66,12 @@
       Dynamsoft.License.LicenseManager.initLicense("DLS2eyJvcmdhbml6YXRpb25JRCI6IjIwMDAwMSJ9");
       Dynamsoft.Core.CoreModule.loadWasm(["dbr"]);
       router = await Dynamsoft.CVR.CaptureVisionRouter.createInstance();
+      intermediateResultManager = router.getIntermediateResultManager();
+      const intermediateResultReceiver = new Dynamsoft.CVR.IntermediateResultReceiver();
+      intermediateResultReceiver.onLocalizedBarcodesReceived = (result, info) => {
+        console.log(result);
+      };
+      intermediateResultManager.addResultReceiver(intermediateResultReceiver);
     }
 
     function startProcessing(){
@@ -87,7 +94,7 @@
     }
 
     function displayResults(result){
-      if (result.barcodeResultItems.length > 0) {   
+      if (result.barcodeResultItems && result.barcodeResultItems.length > 0) {   
         let ol = document.querySelector(".results ol");
         ol.innerHTML = "";
         for (let index = 0; index < result.barcodeResultItems.length; index++) {
