@@ -145,6 +145,7 @@
 
     function calculatedFactor(localizedBarcode){
       let left = localizedBarcode.location.points[0].x;
+      let top = localizedBarcode.location.points[0].y;
       let video = document.getElementById("video");
       let width = video.videoWidth;
       if (left < width/2) {
@@ -152,7 +153,9 @@
         if (croppedWidth == 0) {
           return 1.0;
         }
-        return width / (croppedWidth * 2);
+        let maxCroppedWidth = top;
+        croppedWidth = Math.min(maxCroppedWidth,croppedWidth);
+        return width / (width - (croppedWidth * 2));
       }else{
         return 1.0;
       }
