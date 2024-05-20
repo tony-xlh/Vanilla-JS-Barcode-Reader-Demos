@@ -17,6 +17,26 @@
       margin: 10px 0;
       padding: 5px;
     }
+
+    .scanner {
+      position: relative;
+    }
+
+    .scanner video {
+      position: absolute;
+    }
+
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .barcode-polygon {
+      stroke: green;
+      stroke-width: 2px;
+      fill: rgba(0, 255, 0, 0.5);
+    }
   </style>
 </head>
 <body>
@@ -44,7 +64,10 @@
     <div>Results:</div>
     <ol></ol>
   </div>
-  <video id="video" muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
+  <div class="scanner">
+    <video id="video" muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
+    <svg id="overlay"></svg>
+  </div>
   <script type="text/javascript">
     let cameras = [];
     let track;
@@ -52,12 +75,17 @@
     let interval;
     let processing = false;
     let intermediateResultManager;
+    let overlay = document.getElementById("overlay");
     window.onload = async function(){
       await requestCameraPermission();
       await listCameras();
       checkBrowserCapabilities();
       await initCVR();
       document.getElementById("video").addEventListener("loadeddata",function(){
+        let video = document.getElementById("video");
+        overlay.setAttribute("viewBox","0 0 "+video.videoWidth+" "+video.videoHeight);
+        overlay.style.width = video.clientWidth;
+        overlay.style.height = video.clientHeight;
         startProcessing();
       })
     }
@@ -70,6 +98,7 @@
       const intermediateResultReceiver = new Dynamsoft.CVR.IntermediateResultReceiver();
       intermediateResultReceiver.onLocalizedBarcodesReceived = (result, info) => {
         console.log(result);
+        drawOverlay(result.localizedBarcodes);
       };
       intermediateResultManager.addResultReceiver(intermediateResultReceiver);
     }
@@ -91,6 +120,30 @@
       let result = await router.capture(document.getElementsByTagName("video")[0],"ReadSingleBarcode");
       displayResults(result);
       processing = false;
+    }
+
+    function drawOverlay(localizedBarcodes){
+      overlay.innerHTML = "";
+      let group = document.createElementNS("http://www.w3.org/2000/svg","g");
+      for (let index = 0; index < localizedBarcodes.length; index++) {
+        const localizedBarcode = localizedBarcodes[index];
+        if (localizedBarcode.confidence>50) {
+          let points = localizedBarcode.location.points;
+          let polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
+          polygon.setAttribute("points",getPointsData(points));
+          polygon.setAttribute("class","barcode-polygon");
+          group.appendChild(polygon)
+        }
+      }
+      overlay.appendChild(group);
+    }
+
+    function getPointsData(points){
+      var pointsData = points[0].x+","+points[0].y+" ";
+      pointsData = pointsData+points[1].x+","+points[1].y+" ";
+      pointsData = pointsData+points[2].x+","+points[2].y+" ";
+      pointsData = pointsData+points[3].x+","+points[3].y;
+      return pointsData;
     }
 
     function displayResults(result){
