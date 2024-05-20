@@ -60,6 +60,10 @@
     Zoom Factor:
     <input type="number" min="0" max="2" id="zoomInput" value="0" onchange="setZoom();">
   </label>
+  <label>
+    Enable Auto-Zoom:
+    <input type="checkbox" id="autoZoomInput" checked>
+  </label>
   <button onclick="startCamera();">Start Camera</button>
   <br/>
   <div class="results">
@@ -102,15 +106,17 @@
       const intermediateResultReceiver = new Dynamsoft.CVR.IntermediateResultReceiver();
       intermediateResultReceiver.onLocalizedBarcodesReceived = (result, info) => {
         //console.log(result);
-        if (currentResult && currentResult.items && currentResult.items.length == 0) {     
-          if (result.localizedBarcodes.length > 0) {
-            let zoomInput = document.getElementById("zoomInput");
-            if (parseFloat(zoomInput.value) <= 1.0) {
-              console.log("not zoomed. try to zoom");
-              zoomIn(result.localizedBarcodes[0]);
-            }else{
-              console.log("zoomed. zoom out if time out");
-              zoomOutIfTimeOut();
+        if (document.getElementById("autoZoomInput").checked) {
+          if (currentResult && currentResult.items && currentResult.items.length == 0) {     
+            if (result.localizedBarcodes.length > 0) {
+              let zoomInput = document.getElementById("zoomInput");
+              if (parseFloat(zoomInput.value) <= 1.0) {
+                console.log("not zoomed. try to zoom");
+                zoomIn(result.localizedBarcodes[0]);
+              }else{
+                console.log("zoomed. zoom out if time out");
+                zoomOutIfTimeOut();
+              }
             }
           }
         }
@@ -176,7 +182,7 @@
       let group = document.createElementNS("http://www.w3.org/2000/svg","g");
       for (let index = 0; index < localizedBarcodes.length; index++) {
         const localizedBarcode = localizedBarcodes[index];
-        if (localizedBarcode.confidence>75) {
+        if (localizedBarcode.confidence > 75) {
           let points = localizedBarcode.location.points;
           let polygon = document.createElementNS("http://www.w3.org/2000/svg","polygon");
           polygon.setAttribute("points",getPointsData(points));
