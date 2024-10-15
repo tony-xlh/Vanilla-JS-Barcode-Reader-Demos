@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EAN-13 Scanner</title>
+  <title>EAN Scanner</title>
   <style>
   h2 {
     text-align: center;
@@ -23,7 +23,7 @@
 <html>
 <body>
   <div id="app">
-    <h2>EAN-13 Scanner</h2>
+    <h2>EAN Scanner</h2>
     <button id="startScanBtn">Start Scanning</button>
     <div id="status">Loading...</div>
     <div id="cameraView"></div>
@@ -65,7 +65,7 @@
       filter.enableResultCrossVerification("barcode", true);
       filter.enableResultDeduplication("barcode", true);
       await cvRouter.addResultFilter(filter);
-      await updateSettingsForEAN13();
+      await updateSettingsForEAN();
       document.getElementById("status").remove();
       initialized = true;
     }
@@ -91,7 +91,7 @@
       }
     }
 
-    async function updateSettingsForEAN13(){
+    async function updateSettingsForEAN(){
       let settings = await cvRouter.outputSettings();
       let formatOptionsArray = settings.BarcodeFormatSpecificationOptions;
       for (let index = 0; index < formatOptionsArray.length; index++) {
@@ -102,7 +102,7 @@
       console.log(barcodeOptionsArray)
       for (let index = 0; index < barcodeOptionsArray.length; index++) {
         const options = barcodeOptionsArray[index];
-        options["BarcodeFormatIds"] = ["BF_EAN_13"];
+        options["BarcodeFormatIds"] = ["BF_EAN_8","BF_EAN_13"];
       }
       await cvRouter.initSettings(settings);
     }
