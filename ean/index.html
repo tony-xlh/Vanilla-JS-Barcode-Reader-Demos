@@ -102,7 +102,7 @@
       console.log(barcodeOptionsArray)
       for (let index = 0; index < barcodeOptionsArray.length; index++) {
         const options = barcodeOptionsArray[index];
-        options["BarcodeFormatIds"] = ["BF_EAN_8","BF_EAN_13"];
+        options["BarcodeFormatIds"] = ["BF_EAN_8","BF_EAN_13","BF_UPC_A","BF_UPC_E"];
       }
       await cvRouter.initSettings(settings);
     }
